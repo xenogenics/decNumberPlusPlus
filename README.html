@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+  <title>decNumber++: A high-performance decimal arithmetic library for C++</title>
+  <meta name="owner"  content="klarer@ca.ibm.com" />
+  <meta name="review" content="20060708" />
+  <style type="text/css">
+    h1 { align:center; font-family:Helvetica; font-size:15pt; color:darkblue; }
+    h2 { align:center; font-family:Helvetica; font-size:12pt; color:darkblue; }
+  </style>
+</head>
+
+<body>
+
+<h1>decNumber++:<br/>A high-performance decimal arithmetic library for C++</h1>
+<h2>Overview:</h2>
+
+<p>
+Traditionally, programmers using the C and C++ programming languages have used the generic floating-point types float, double,  and long double to approximate real numbers.  Most C and C++ language translators in use today encode the generic floating-point types as base-2 (i.e. binary) numbers.
+</p>
+
+<p>
+One problem that arises in floating-point arithmetic is that -- for any given base -- some rational values cannot be exactly represented within a finite number of significant digits.  A familiar example is the value 1/3, which cannot be represented exactly within a finite number of decimal digits (0.33333....).  Similarly, numbers that commonly arise in commercial applications cannot be represented exactly using binary floating-point arithmetic types.  The decimal value 0.1, for example, has no exact representation in a binary floating-point format.  The resulting inaccuracy is usually acceptable in scientific and engineering applications, provided it remains within a certain tolerance.  In commercial applications -- where monetary values are conventionally expressed and calculated in base-10 -- even small inaccuracies due to radix conversion to and from binary notation are impermissible; these inaccuracies can compound over time to represent significant amounts of money.  For this reason, binary floating-point types are not suitable for use in business data processing.  What's required are decimal floating-point types.
+</p>
+
+<p>
+The decNumber++ arithmetic library extends the C++ language to support three new floating-point types, in addition to float, double,  and long double.  Included are 32-bit, 64-bit, and 128-bit decimal floating point types, named std::decimal::decimal32, std::decimal::decimal64, and std::decimal::decimal128, respectively.  Conversions between these new types and the standard C++ arithmetic types are supported.  Arithmetic and logical operations are expressed in familiar C++ syntax, using the C++ arithmetic operators (+, -, *, /, +=. -=, *=, /=) and comparison operators (==, !=, &lt;, >, &lt;=, >=).   Components that permit the use of these types with the C++ Standard Library, including the IOStreams input/output library, are included, as are several math functions (e.g. abs(), sqrt, round(), etc).  A variety of rounding modes is supported.
+</p>
+
+<p>
+The decNumber++ library is a reference implementation of interfaces proposed for a forthcoming ISO Technical Report on decimal arithmetic types in C++: "JTC1.22.24733 - ISO/IEC TR 24733 - Information Technology - Programming Languages C++ - Technical Report of Type 2 on Extensions for the programming language C++ to support decimal floating point arithmetic."  This Technical Report will specify a binding of Standard C++ to the decimal floating-point arithmetic and encodings described in the IEEE document "DRAFT Standard for Floating-Point Arithmetic P754."
+</p>
+
+<h2>How It Works</h2>
+
+<p>
+The C decNumber library -- also available from alphaWorks -- permits the computation of decimal floating-point arithmetic expressions in C++, but does not use the customary C++ operator syntax, does not permit conversion between decimal types and the standard C++ arithmetic types, and is not integrated with the C++ Standard Library.
+</p>
+
+<p>
+The following C++ code example demonstrates the use of the decNumber++ decimal arithmetic types.  Note that, apart from initialization, the expression of operations involving the decimal types is identical, syntactically, to that of the standard C and C++ floating-point types long, double, and long double.  Mixed-radix arithmetic is not permitted (for example, it is an error to attempt to add a <code>long double</code> to a <code>std::decimal::decimal64</code>).
+</p>
+
+<pre>
+#include &lt;iomanip>
+#include &lt;iostream>
+#include "cdecfloat"
+#include "decimal"
+
+int main()
+        {
+        std::decimal::decimal128 base_ten = "1.0";
+
+        // set output format parameters:
+        std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(DEC128_MANT_DIG);
+
+        std::cout &lt; base_ten &lt; std::endl;
+        std::cout &lt; (base_ten /= 10) &lt;&lt; std::endl;
+        std::cout &lt; (base_ten * 10 != 42 ? "true" : "false") &lt;&lt; std::endl;
+        }
+</pre>
+
+<h2>Installation and Configuration</h2>
+
+<p>
+1. Download <a href="http://www.alphaworks.ibm.com/tech/decNumber">the original decNumber library</a> and compile the source as C code (<b>not</b> C++).
+</p>
+
+<p>
+2. Unzip the downloadable decNumber++ file to a suitable subdirectory.
+</p>
+
+<p>
+3. You may wish to configure the decNumber++ library to your C++ compiler and target platform.  To do this, consult the decNumber++ header file "impl/decConfig.h" and #define the appropriate configuration macros, according to the directions in the file.
+</p>
+
+<p>
+4. Compile the decNumber++ source file (*.cpp) as C++ code (<b>not</b> C), and link the resulting object files to the decNumber library produced in step 1.
+</p>
+
+<p>
+5. When using the library that you built in step 4, be sure to specify the path to that library in your compiler library search path.  As well, ensure that you have specified the path to the decNumber and decNumber++ library header files in your compiler include search path.
+</p>
+
+<h2>Using decNumber++</h2>
+
+<p>
+The main decNumber++ header file is "<code>decimal</code>."  Be sure to #include this header in any C++ source file that uses the decNumber++ arithmetic types.  The contents of this header file are declared in the C++ namespace <code>std::decimal</code>.
+</p>
+
+<p>
+Several useful mathematical functions are declared in the header file "<code>cdecmath</code>."  Again, the contents of this header file are declared in the namespace <code>std::decimal</code>.  The companion header file "<code>decmath.h</code>" declares the "<code>cdecmath</code>" functions in the global namespace.
+</p>
+
+<p>
+Some important numeric constants are #defined as macros in the header file "<code>cdecfloat</code>."  The companion header file "<code>decfloat.h</code>" #defines the same macros, and declares the C-compatibility typedefs <code>_Decimal32</code>, <code>_Decimal64</code>, <code>_Decimal128</code>.
+</p>
+
+<p>
+The header file "<code>declimits</code>" contains specializations of the C++ Standard Library template <code>std::numeric_limits</code> for the decNumber++ arithmetic types.
+</p>
+
+<h2>Futher Reading</h2>
+
+<p>
+Please consult the following specification for further documentation of the decNumber++ library's interface:
+<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n1977.html">
+Decimal Types for C++: Draft 4
+</a>
+</p>
+
+<p>
+For general information about decimal arithmetic, or for specific information about the original decNumber library, see:
+<a href="http://www2.hursley.ibm.com/decimal/">
+General Decimal Arithmetic
+</a>
+</p>
+
+<h2>Contact</h2>
+
+<p>
+Please send any comments or corrections to Robert Klarer at <a href="mailto:klarer@ca.ibm.com"><tt>klarer@ca.ibm.com</tt></a>.
+</p>
+
+<p>
+<em>Copyright &copy; IBM Corporation 2006.  All rights reserved.</em>
+</p>
+
+</body>
+</html>
